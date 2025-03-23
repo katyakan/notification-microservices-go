@@ -66,12 +66,12 @@ curl -X POST http://localhost:3000/messages \
 ```
 ┌────────────────┐     ┌─────────┐     ┌────────────────┐     ┌─────────────┐
 │ Producer       │     │         │     │ Notification   │     │   Telegram  │
-│ Service (3000) │ ──► │  Kafka  │ ──► │ Service       │ ──► │   Bot API   │
+│ Service (3000) │ ──► │  Kafka  │ ──► │ Service        │ ──► │   Bot API   │
 └────────────────┘     │         │     └────────────────┘     └─────────────┘
                        │         │     ┌────────────────┐
                        └─────────┘ ──► │ Consumer       │
-                                      │ Service (3001)  │
-                                      └────────────────┘
+                                       │ Service (3001) │
+                                       └────────────────┘
 ```
 
 ### System Components
