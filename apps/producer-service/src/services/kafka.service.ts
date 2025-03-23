@@ -52,8 +52,11 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.producer.send(record);
       return { id: message.id };
-    } catch (error) {
-      throw new Error(`Failed to send message: ${error.message}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to send message: ${error.message}`);
+      }
+      throw new Error("Failed to send message: Unknown error");
     }
   }
 }

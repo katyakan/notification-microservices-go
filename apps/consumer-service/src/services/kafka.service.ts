@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
 import { Kafka, Consumer, EachMessagePayload } from "kafkajs";
 import { kafkaConfig } from "../config/kafka.config";
-import { KafkaMessage } from "@libs/shared";
+import { KafkaMessage, NotificationMessage, BaseKafkaMessage } from "@libs/shared";
 
 @Injectable()
 export class KafkaService implements OnModuleInit, OnModuleDestroy {
@@ -32,8 +32,12 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
             throw new Error("Empty message value");
           }
 
-          const message = JSON.parse(payload.message.value.toString()) as KafkaMessage;
-          await this.processMessage(message);
+          const rawMessage = JSON.parse(payload.message.value.toString()) as unknown;
+          if (!this.isValidKafkaMessage(rawMessage)) {
+            throw new Error("Invalid message format");
+          }
+
+          await this.processMessage(rawMessage);
         } catch (error) {
           console.error("Error processing message:", error);
           await this.handleDeadLetter(payload);
@@ -46,6 +50,33 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     await this.consumer.disconnect();
   }
 
+  private isValidKafkaMessage(message: unknown): message is KafkaMessage {
+    if (typeof message !== "object" || message === null) {
+      return false;
+    }
+
+    const msg = message as Record<string, unknown>;
+    return (
+      typeof msg.id === "string" &&
+      typeof msg.type === "string" &&
+      typeof msg.timestamp === "number" &&
+      msg.payload !== undefined &&
+      typeof msg.payload === "object"
+    );
+  }
+
+  private isNotificationMessage(
+    message: KafkaMessage,
+  ): message is BaseKafkaMessage<NotificationMessage> & { type: "notification" } {
+    return (
+      message.type === "notification" &&
+      typeof message.payload === "object" &&
+      message.payload !== null &&
+      typeof (message.payload as NotificationMessage).chatId === "number" &&
+      typeof (message.payload as NotificationMessage).text === "string"
+    );
+  }
+
   private async processMessage(message: KafkaMessage) {
     console.log("Processing message:", {
       id: message.id,
@@ -53,19 +84,19 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
       timestamp: message.timestamp,
     });
 
-    switch (message.type) {
-      case "notification":
-        await this.handleNotification(message);
-        break;
-      default:
-        console.warn(`Unknown message type: ${message.type}`);
+    if (this.isNotificationMessage(message)) {
+      await this.handleNotification(message.payload);
+    } else {
+      console.warn(`Unknown message type: ${message.type}`);
     }
   }
 
-  private async handleNotification(message: KafkaMessage) {
-    const { chatId, text } = message.payload;
+  private async handleNotification(payload: NotificationMessage) {
+    const { chatId, text } = payload;
     console.log(`Sending notification to chat ${chatId}: ${text}`);
-    // Здесь будет логика отправки уведомления
+    await Promise.resolve();
+    // TODO: Реализовать реальную отправку уведомления
+    // await notificationClient.send({ chatId, text });
   }
 
   private async handleDeadLetter(payload: EachMessagePayload) {

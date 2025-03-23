@@ -1,7 +1,7 @@
-export interface KafkaMessage {
+export interface BaseKafkaMessage<T = unknown> {
   id: string;
   type: string;
-  payload: any;
+  payload: T;
   timestamp: number;
 }
 
@@ -10,3 +10,7 @@ export interface NotificationMessage {
   text: string;
   messageId?: string;
 }
+
+export type KafkaMessage =
+  | (BaseKafkaMessage<NotificationMessage> & { type: "notification" })
+  | (BaseKafkaMessage<Record<string, unknown>> & { type: string });
