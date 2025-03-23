@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/kafka-notification-system/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/kafka-notification-system/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/kafka-notification-system",
+  "projects": {
+    "consumer-service": {
+      "type": "application",
+      "root": "apps/consumer-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/consumer-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/consumer-service/tsconfig.app.json"
+      }
+    },
+    "kafka-notification-system": {
+      "type": "application",
+      "root": "apps/kafka-notification-system",
+      "entryFile": "main",
+      "sourceRoot": "apps/kafka-notification-system/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/kafka-notification-system/tsconfig.app.json"
+      }
+    },
+    "notification-service": {
+      "type": "application",
+      "root": "apps/notification-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/notification-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notification-service/tsconfig.app.json"
+      }
+    },
+    "producer-service": {
+      "type": "application",
+      "root": "apps/producer-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/producer-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/producer-service/tsconfig.app.json"
+      }
+    }
+  }
+}
