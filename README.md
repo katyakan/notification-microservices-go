@@ -1,98 +1,192 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Kafka Notification System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A microservice-based system for sending notifications to Telegram using Kafka. The system consists of three services:
+- Producer Service - accepts HTTP requests and sends messages to Kafka
+- Consumer Service - reads messages from Kafka (demonstration service)
+- Notification Service - reads messages from Kafka and sends them to Telegram
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Technologies
 
-## Description
+- Node.js
+- NestJS
+- Apache Kafka
+- Docker
+- Telegram Bot API
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Prerequisites
 
-## Project setup
+- Docker and Docker Compose
+- Node.js 18+
+- Telegram Bot Token (get it from @BotFather)
 
+## Installation and Setup
+
+1. Clone the repository:
 ```bash
-$ npm install
+git clone git@github.com:merkushov/kafka-notification-system.git
+cd kafka-notification-system
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+2. Create `.env` file in the root directory:
+```env
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 ```
 
-## Run tests
+3. Start the system using Docker Compose:
+```bash
+docker-compose up -d
+```
+
+## Usage
+
+### Sending a Notification
+
+Send a POST request to the Producer Service:
+
+```bash
+curl -X POST http://localhost:3000/messages \
+-H "Content-Type: application/json" \
+-d '{
+  "type": "notification",
+  "payload": {
+    "chatId": YOUR_CHAT_ID,
+    "text": "Hello from Producer Service!"
+  }
+}'
+```
+
+### Getting Your Chat ID
+
+1. Find your bot in Telegram
+2. Send the `/start` command
+3. The bot will reply with your Chat ID
+
+## Architecture
+
+```
+┌────────────────┐     ┌─────────┐     ┌────────────────┐     ┌─────────────┐
+│ Producer       │     │         │     │ Notification   │     │   Telegram  │
+│ Service (3000) │ ──► │  Kafka  │ ──► │ Service       │ ──► │   Bot API   │
+└────────────────┘     │         │     └────────────────┘     └─────────────┘
+                       │         │     ┌────────────────┐
+                       └─────────┘ ──► │ Consumer       │
+                                      │ Service (3001)  │
+                                      └────────────────┘
+```
+
+### System Components
+
+- **Producer Service (port 3000)**
+  - Accepts HTTP requests
+  - Validates incoming messages
+  - Sends messages to Kafka
+
+- **Kafka**
+  - Provides asynchronous communication between services
+  - Stores messages in the "notifications" topic
+  - Supports fault tolerance through the "dead-letter" topic
+
+- **Notification Service**
+  - Reads messages from Kafka
+  - Sends notifications to Telegram
+  - Handles delivery errors
+
+- **Consumer Service (port 3001)**
+  - Demonstration service
+  - Reads and logs messages from Kafka
+
+## API Documentation
+
+Swagger UI is available at: `http://localhost:3000/api`
+
+## Development
+
+### Project Structure
+
+```
+apps/
+├── producer-service/     # Message intake service
+├── consumer-service/     # Demo consumer
+└── notification-service/ # Telegram delivery service
+libs/
+└── shared/              # Shared interfaces and utilities
+```
+
+### Running in Development Mode
+
+```bash
+# Install dependencies
+npm install
+
+# Start a service
+npm run start:dev
+```
+
+### Testing
 
 ```bash
 # unit tests
-$ npm run test
+npm run test
 
 # e2e tests
-$ npm run test:e2e
+npm run test:e2e
 
 # test coverage
-$ npm run test:cov
+npm run test:cov
 ```
 
-## Deployment
+### Environment Variables
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Variable | Description | Default |
+|----------|-------------|---------|
+| TELEGRAM_BOT_TOKEN | Your Telegram bot token | - |
+| KAFKA_BROKERS | Kafka broker addresses | localhost:9092 |
+| port | Service port | 3000 |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Docker Services
 
+| Service | Port | Description |
+|---------|------|-------------|
+| producer-service | 3000 | HTTP API endpoint |
+| consumer-service | 3001 | Demo consumer service |
+| notification-service | - | Telegram notification sender |
+| kafka | 9092 | Message broker |
+| zookeeper | 2181 | Kafka dependency |
+
+## Monitoring
+
+- Service logs are available through Docker:
 ```bash
-$ npm install -g mau
-$ mau deploy
+docker-compose logs -f [service-name]
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Local Development Setup
 
-## Resources
+1. Start Kafka infrastructure:
+```bash
+docker-compose up -d zookeeper kafka
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+2. Run services locally:
+```bash
+# Terminal 1
+npm run start:dev producer-service
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Terminal 2
+npm run start:dev consumer-service
 
-## Support
+# Terminal 3
+npm run start:dev notification-service
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Contributing
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+[UNLICENSED]
