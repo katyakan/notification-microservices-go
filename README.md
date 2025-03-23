@@ -29,7 +29,7 @@ cd kafka-notification-system
 
 2. Create `.env` file in the root directory:
 ```env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+TELEGRAM_BOT_TOKEN=<your_telegram_bot_token_here>
 ```
 
 3. Start the system using Docker Compose:
@@ -170,12 +170,15 @@ docker-compose up -d zookeeper kafka
 2. Run services locally:
 ```bash
 # Terminal 1
+export TELEGRAM_BOT_TOKEN=<your_telegram_bot_token_here> KAFKA_BROKERS=localhost:9092 PORT=3000
 npm run start:dev producer-service
 
 # Terminal 2
+export TELEGRAM_BOT_TOKEN=<your_telegram_bot_token_here> KAFKA_BROKERS=localhost:9092 PORT=3001
 npm run start:dev consumer-service
 
 # Terminal 3
+export TELEGRAM_BOT_TOKEN=<your_telegram_bot_token_here> KAFKA_BROKERS=localhost:9092 PORT=3002
 npm run start:dev notification-service
 ```
 
