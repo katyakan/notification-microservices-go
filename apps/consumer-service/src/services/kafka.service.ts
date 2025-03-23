@@ -28,6 +28,10 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     await this.consumer.run({
       eachMessage: async (payload: EachMessagePayload) => {
         try {
+          if (!payload.message.value) {
+            throw new Error("Empty message value");
+          }
+
           const message = JSON.parse(payload.message.value.toString()) as KafkaMessage;
           await this.processMessage(message);
         } catch (error) {
@@ -73,8 +77,8 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
         topic: kafkaConfig.topics.deadLetter,
         messages: [
           {
-            key: payload.message.key,
-            value: payload.message.value,
+            key: payload.message.key ?? undefined,
+            value: payload.message.value ?? null,
             headers: {
               ...payload.message.headers,
               "error-timestamp": Date.now().toString(),
