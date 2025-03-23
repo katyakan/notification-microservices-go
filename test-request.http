@@ -1,0 +1,10 @@
+POST http://localhost:3000/messages
+Content-Type: application/json
+
+{
+  "type": "notification",
+  "payload": {
+    "chatId": 123456,
+    "text": "Hello from Producer Service!"
+  }
+}
