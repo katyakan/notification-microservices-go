@@ -17,6 +17,9 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@libs/shared": ["libs/shared/src"],
+      "@libs/shared/*": ["libs/shared/src/*"]
+    }
   }
 }
