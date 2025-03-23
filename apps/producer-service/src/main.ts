@@ -1,5 +1,5 @@
-import { NestFactory } from '@nestjs/core';
-import { ProducerServiceModule } from './producer-service.module';
+import { NestFactory } from "@nestjs/core";
+import { ProducerServiceModule } from "./producer-service.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(ProducerServiceModule);

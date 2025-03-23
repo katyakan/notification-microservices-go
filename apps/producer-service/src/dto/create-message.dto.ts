@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class CreateMessageDto {
   @ApiProperty({
     description: "Type of the message",
-    example: "notification"
+    example: "notification",
   })
   @IsString()
   @IsNotEmpty()
@@ -12,7 +12,7 @@ export class CreateMessageDto {
 
   @ApiProperty({
     description: "Message payload",
-    example: { text: "Hello World", chatId: 123456 }
+    example: { text: "Hello World", chatId: 123456 },
   })
   @IsObject()
   @IsNotEmpty()

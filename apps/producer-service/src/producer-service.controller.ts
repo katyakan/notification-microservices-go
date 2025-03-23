@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
-import { ProducerServiceService } from './producer-service.service';
+import { Controller, Get } from "@nestjs/common";
+import { ProducerServiceService } from "./producer-service.service";
 
 @Controller()
 export class ProducerServiceController {

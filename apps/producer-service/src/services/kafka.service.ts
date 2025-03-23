@@ -43,7 +43,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
           key: message.id,
           value: JSON.stringify(message),
           headers: {
-            'message-type': dto.type,
+            "message-type": dto.type,
           },
         },
       ],
