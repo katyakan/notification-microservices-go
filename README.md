@@ -49,7 +49,7 @@ curl -X POST http://localhost:3000/messages \
 -d '{
   "type": "notification",
   "payload": {
-    "chatId": YOUR_CHAT_ID,
+    "chatId": YOUR_TELEGRAM_CHAT_ID,
     "text": "Hello from Producer Service!"
   }
 }'
