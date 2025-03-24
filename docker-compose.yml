@@ -9,7 +9,7 @@ services:
     ports:
       - "2181:2181"
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "2181" ]
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,7 +30,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,26 +46,34 @@ services:
         condition: service_healthy
     environment:
       KAFKA_BROKERS: kafka:29092
+    env_file:
+      - .env
 
   consumer-service:
     build:
       context: .
       dockerfile: ./apps/consumer-service/Dockerfile
     ports:
-      - "3001:3000"
+      - "3001:3001"
     depends_on:
       kafka:
         condition: service_healthy
     environment:
       KAFKA_BROKERS: kafka:29092
+    env_file:
+      - .env
 
   notification-service:
     build:
       context: .
       dockerfile: ./apps/notification-service/Dockerfile
+    ports:
+      - "3002:3002"
     depends_on:
       kafka:
         condition: service_healthy
     environment:
       KAFKA_BROKERS: kafka:29092
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+    env_file:
+      - .env

@@ -13,13 +13,20 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
+    "noImplicitOverride": false,
+    "noImplicitReturns": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+  
     "paths": {
-      "@libs/shared": ["libs/shared/src"],
-      "@libs/shared/*": ["libs/shared/src/*"]
-    }
+  "@libs/shared": [
+    "libs/shared/src"
+  ],
+  "@libs/shared/*": [
+    "libs/shared/src/*"
+  ]
+}
   }
 }

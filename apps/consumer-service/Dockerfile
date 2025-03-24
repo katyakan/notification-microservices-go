@@ -1,9 +1,10 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 COPY tsconfig*.json ./
+COPY .env .env
 COPY nest-cli.json ./
 
 RUN npm install
