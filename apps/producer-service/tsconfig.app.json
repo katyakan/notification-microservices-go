@@ -3,10 +3,14 @@
   "compilerOptions": {
     "declaration": false,
     "outDir": "../../dist/apps/producer-service",
-    "rootDir": "src",
+    "rootDir": "../../",
     "baseUrl": "../../"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "apps/producer-service/src/**/*",
+    "apps/producer-service/src/main.ts",
+    "libs/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist",

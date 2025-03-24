@@ -59,9 +59,12 @@ services:
       kafka:
         condition: service_healthy
     environment:
+      CONSUMER_PORT: 3001
       KAFKA_BROKERS: kafka:29092
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
     env_file:
       - .env
+     
 
   notification-service:
     build:

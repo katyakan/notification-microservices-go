@@ -1,8 +1,11 @@
 import { NestFactory } from "@nestjs/core";
-import { ConsumerServiceModule } from "./consumer-service.module";
+import { ConsumerModule } from "./consumer.module";
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(ConsumerServiceModule);
-  await app.listen(process.env.PORT || 3000);
+  const app = await NestFactory.create(ConsumerModule);
+  await app.listen(process.env.CONSUMER_PORT || 3001);
+  console.log('⚙️ PORT:', process.env.CONSUMER_PORT);
+
 }
 bootstrap();
