@@ -38,7 +38,7 @@ services:
   producer-service:
     build:
       context: .
-      dockerfile: ./apps/producer-service/Dockerfile
+      dockerfile: ./cmd/producer-service/Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -46,22 +46,22 @@ services:
         condition: service_healthy
     environment:
       KAFKA_BROKERS: kafka:29092
+      PORT: 3000
     env_file:
       - .env
 
   consumer-service:
     build:
       context: .
-      dockerfile: ./apps/consumer-service/Dockerfile
+      dockerfile: ./cmd/consumer-service/Dockerfile
     ports:
       - "3001:3001"
     depends_on:
       kafka:
         condition: service_healthy
     environment:
-      CONSUMER_PORT: 3001
       KAFKA_BROKERS: kafka:29092
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      PORT: 3001
     env_file:
       - .env
      
@@ -69,14 +69,36 @@ services:
   notification-service:
     build:
       context: .
-      dockerfile: ./apps/notification-service/Dockerfile
+      dockerfile: ./cmd/notification-service/Dockerfile
     ports:
       - "3002:3002"
     depends_on:
       kafka:
         condition: service_healthy
+      kafka-setup:
+        condition: service_completed_successfully
     environment:
       KAFKA_BROKERS: kafka:29092
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      PORT: 3002
     env_file:
       - .env
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  kafka-setup:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: >
+      bash -c "
+        echo 'Waiting for Kafka to be ready...' &&
+        cub kafka-ready -b kafka:29092 1 30 &&
+        kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1 --topic notifications &&
+        kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1 --topic dead-letter
+      "

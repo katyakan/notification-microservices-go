@@ -1,3 +1,4 @@
+### Test Producer Service (Go version)
 POST http://localhost:3000/messages
 Content-Type: application/json
 
@@ -5,6 +6,18 @@ Content-Type: application/json
   "type": "notification",
   "payload": {
     "chatId": 123456,
-    "text": "Hello from Producer Service!"
+    "text": "Hello from Go Producer Service!"
   }
 }
+
+### Health check - Producer Service
+GET http://localhost:3000/health
+
+### Health check - Consumer Service
+GET http://localhost:3001/health
+
+### Health check - Notification Service
+GET http://localhost:3002/health
+
+### Swagger Documentation
+GET http://localhost:3000/api/index.html

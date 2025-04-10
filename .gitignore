@@ -1,4 +1,45 @@
-.idea
-node_modules
+# IDE files
+.idea/
+.vscode/
+
+# Node.js (legacy)
+node_modules/
+
+# Go binaries and artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+bin/
+dist/
+
+# Environment files
 .env
-dist
+.env.local
+.env.*.local
+
+# Coverage files
+coverage.out
+coverage.html
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Go workspace file
+go.work
