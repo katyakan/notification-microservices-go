@@ -241,26 +241,3 @@ docker-compose up notification-service
 make docker-logs
 ```
 
-## Troubleshooting
-
-### Проблемы с Kafka
-1. Убедитесь, что Kafka и Zookeeper запущены
-2. Проверьте, что топики созданы:
-```bash
-docker-compose exec kafka kafka-topics --list --bootstrap-server localhost:9092
-```
-
-### Проблемы с Telegram
-1. Проверьте правильность токена бота
-2. Убедитесь, что бот не заблокирован
-3. Проверьте правильность Chat ID
-
-### Проблемы с портами
-Убедитесь, что порты 3000, 3001, 3002 свободны:
-```bash
-netstat -tulpn | grep :300
-```
-
-## Лицензия
-
-MIT License
